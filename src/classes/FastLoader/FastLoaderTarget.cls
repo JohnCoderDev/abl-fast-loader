@@ -72,7 +72,7 @@ class classes.FastLoader.FastLoaderTarget:
         return this-object.
     end method.
     
-    method public void loadToTableTarget(pSource as handle):
+    method public void loadToTargetTable(pSource as handle):
         define variable keyPhrase as character no-undo.
         define variable targetBuffer as handle no-undo.
         define variable sourceBuffer as handle no-undo.
@@ -306,6 +306,7 @@ class classes.FastLoader.FastLoaderTarget:
     end method.
     
     method public FastLoader finish():
+        fastLoaderParent:setTarget(this-object).
         return fastLoaderParent.
     end method.
 end class.
