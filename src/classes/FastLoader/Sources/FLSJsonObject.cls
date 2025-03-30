@@ -3,7 +3,6 @@ using Progress.Json.ObjectModel.* from propath.
 using classes.FastLoader.Shared.* from propath.
 
 class classes.FastLoader.Sources.FLSJsonObject inherits classes.FastLoader.Interfaces.ASourceLoader:
-    define private property jsonKeys as character extent get. set.
     define private property json as JsonObject get. set.
     
     constructor FLSJsonObject():
@@ -15,6 +14,7 @@ class classes.FastLoader.Sources.FLSJsonObject inherits classes.FastLoader.Inter
         define variable fieldType as integer no-undo.
         define variable primitiveName as character no-undo.
         define variable fieldName as character no-undo.
+        define variable jsonKeys as character extent no-undo.
         
         assign 
             json = cast(pSource, JsonObject)
@@ -52,9 +52,8 @@ class classes.FastLoader.Sources.FLSJsonObject inherits classes.FastLoader.Inter
                 fieldName = fieldNames[idx]
                 jsonParameter = JsonMethodParameter:getParameter(fieldName)
                 callerMethod = JsonMethod:getMethod(json, fieldName)
-                bufferField = defaultBuffer:buffer-field(fieldName).
-            
-            assign bufferField:buffer-value = callerMethod:invoke(json, jsonParameter).
+                bufferField = defaultBuffer:buffer-field(fieldName)
+                bufferField:buffer-value = callerMethod:invoke(json, jsonParameter).
         end.
     end method.
 end class.
