@@ -186,7 +186,7 @@ class classes.FastLoader.Interfaces.ASourceLoader abstract:
     end method.
     
     method public character extent getFieldNames():
-        define variable idx as integer no-undo.
+        define variable idx as integer initial 1 no-undo.
         define variable fieldNames as character extent no-undo.
         
         assign extent(fieldNames) = fieldCounter.

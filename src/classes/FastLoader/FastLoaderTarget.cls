@@ -85,32 +85,31 @@ class classes.FastLoader.FastLoaderTarget:
         querySource:set-buffers(sourceBuffer).
         querySource:query-prepare('for each ' + pSource:name).
         querySource:query-open.
+        querySource:get-first.
         
-        do while not querySource:query-off-end:
-            querySource:get-next.
-            
+        do while not querySource:query-off-end:            
             assign keyPhrase = getKeyPhrase(sourceBuffer).
-            targetBuffer:find-first(keyPhrase, exclusive-lock) no-error.
             
-            if targetBuffer:available then do:
-                if updateOnly or not createOnly then do:
-                    copyBuffer(sourceBuffer, targetBuffer).
+            do transaction on error undo, next:
+                targetBuffer:find-first(keyPhrase, exclusive-lock) no-error.
+                if targetBuffer:available then do:
+                    if updateOnly or not createOnly then do:
+                        copyBuffer(sourceBuffer, targetBuffer).
+                    end.
+                end.
+                else do:
+                    if createOnly or not updateOnly then do:
+                        targetBuffer:buffer-create.
+                        copyBuffer(sourceBuffer, targetBuffer).
+                    end.
                 end.
             end.
-            else do:
-                if createOnly or not updateOnly then do:
-                    targetBuffer:buffer-create.
-                    copyBuffer(sourceBuffer, targetBuffer).
-                end.
-            end.
-            
             targetBuffer:buffer-release no-error.
+            querySource:get-next.
         end.
         
-        sourceBuffer:buffer-release.
         querySource:query-close.
         delete object querySource.
-        delete object sourceBuffer.
         delete object targetBuffer.
     end method.
     
@@ -118,7 +117,7 @@ class classes.FastLoader.FastLoaderTarget:
         define variable sourceField as handle no-undo.
         define variable targetField as handle no-undo.
         define variable idx as integer no-undo.
-        
+         
         loadFields(pSourceBuffer, pTargetBuffer).
         
         for each fieldsToCopy:
